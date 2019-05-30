@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: dev
+  jersey:
+    application-path: webhook
+
+common:
+  # 自动部署后发送邮件需要的信息
+  notify:
+    username: # 用来发送的邮箱账号
+    password: # 用来发送的邮箱密码
+    receiver: # 接收者的邮箱
+  # 七牛的相关密钥
+  qiniu:
+    access-key: your access key
+    secret-key: your secret key
+  project-config-path: /www/git/config.json
+

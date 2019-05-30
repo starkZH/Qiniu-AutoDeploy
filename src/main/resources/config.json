@@ -1,0 +1,9 @@
+[{
+  "id": "project",
+  "path": "/www/",
+  "command": "",
+  "prefix": "test/",
+  "bucket": "",
+  "domain": "",
+  "secret": "WebHook密钥"
+}]

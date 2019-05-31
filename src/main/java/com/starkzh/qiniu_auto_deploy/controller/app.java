@@ -81,40 +81,43 @@ public class app {
             mailContent+="\n[执行结果]："+Util.execCommand(project.getCommand());
 
             String exception_text="";
-            int delete_count=0,upload_count=0;
+            String delete_content="",upload_content="";
             //删除在七牛上原来的文件
             for(String file:delete_list)
                 try {
-                    if (QiniuUtil.delete(access_key, secret_key, project.getBucket(), project.getPrefix() + file))
-                        delete_count++;
+                    String file_key=project.getPrefix() + file;
+                    if (QiniuUtil.delete(access_key, secret_key, project.getBucket(), file_key))
+                        delete_content+=file_key+"\n";
                 }catch (QiniuException ex){
                     exception_text+="[Delete Exception]:\n"+ex.response.toString();
                 }
              //上传新的文件
            for (String file : add_list)
                try {
-                   if (QiniuUtil.upload(access_key, secret_key, project.getBucket(), project.getPath() + "/" + file,
+                   String file_path=project.getPath() + "/" + file;
+                   if (QiniuUtil.upload(access_key, secret_key, project.getBucket(), file_path,
                             project.getPrefix() + file))
-                        upload_count++;
+                       upload_content+=file_path+"\n";
                 }catch (QiniuException e){
                      exception_text+="[Upload Exception]:\n"+e.response.toString()+"\n";
                 }
 
             mailContent+="\n\n以下为在七牛云存储上的操作：\n";
-            mailContent+="\n[删除文件数]："+delete_count;
-            mailContent+="\n[上传文件数]："+upload_count;
+            mailContent+="\n[删除的文件]："+delete_content;
+            mailContent+="\n[上传的文件]："+upload_content;
 
             mailContent+="\n\n以下为在七牛CDN上的操作：\n";
-            int flush_count=0;
+            String flush_content="";
             //获取要刷新的url
             String[] urls = new String[add_list.size()];
-            for(int i=0;i<add_list.size();i++)
+            for(int i=0;i<add_list.size();i++){
                 urls[i]=add_list.get(i);
-
+                flush_content+=urls[i]+"\n";
+            }
+            boolean flush_result;
             //刷新CDN文件
-            if(QiniuUtil.flushFile(access_key,secret_key,project.getDomain(), urls))
-                flush_count=add_list.size();
-            mailContent+="\n[刷新文件数]："+flush_count;
+            flush_result=(QiniuUtil.flushFile(access_key,secret_key,project.getDomain(), urls));
+            mailContent+="\n[刷新URL]：["+flush_result+"]\n"+flush_content;
 
             String modified_files="";
             for(String file:add_list)

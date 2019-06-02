@@ -111,7 +111,7 @@ public class app {
             //获取要刷新的url
             String[] urls = new String[add_list.size()];
             for(int i=0;i<add_list.size();i++){
-                urls[i]=add_list.get(i);
+                urls[i]=project.getPrefix()+add_list.get(i);
                 flush_content+=urls[i]+"\n";
             }
             boolean flush_result;

@@ -34,11 +34,9 @@ public class QiniuUtil {
         return true;
     }
 
-    public static boolean flushFile(String accessKey,String secretKey,String domain,String[] urls){
+    public static boolean flushFile(String accessKey,String secretKey,String[] urls){
         Auth auth = Auth.create(accessKey, secretKey);
         CdnManager c = new CdnManager(auth);
-        for(int i=0;i<urls.length;i++)
-            urls[i]=domain+urls[i];
         try{
             //单次方法调用刷新的链接不可以超过100个
             CdnResult.RefreshResult result = c.refreshUrls(urls);

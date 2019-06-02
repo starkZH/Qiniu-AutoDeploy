@@ -111,12 +111,12 @@ public class app {
             //获取要刷新的url
             String[] urls = new String[add_list.size()];
             for(int i=0;i<add_list.size();i++){
-                urls[i]=project.getPrefix()+add_list.get(i);
+                urls[i]=project.getDomain()+project.getPrefix()+add_list.get(i);
                 flush_content+=urls[i]+"\n";
             }
             boolean flush_result;
             //刷新CDN文件
-            flush_result=(QiniuUtil.flushFile(access_key,secret_key,project.getDomain(), urls));
+            flush_result=(QiniuUtil.flushFile(access_key,secret_key, urls));
             mailContent+="\n[刷新URL]：["+flush_result+"]\n"+flush_content;
 
             String modified_files="";

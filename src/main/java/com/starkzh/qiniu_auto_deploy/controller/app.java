@@ -18,9 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Path("/app")
 public class app {
@@ -55,10 +53,11 @@ public class app {
             String access_key=commonConfig.getAccessKey(),secret_key=commonConfig.getSecretKey();
 
             String mailContent="";
+            String commit_message="";
             int added_count=0,modified_count=0,removed_count=0;
-            List<String>
-                    delete_list=new ArrayList<>(),
-                    add_list=new ArrayList<>();
+            Set<String>
+                    delete_list=new HashSet<>(),
+                    add_list=new HashSet<>();
             List<Map<String,Object>> commit_list= (List<Map<String, Object>>) params.get("commits");
             if(commit_list==null)
                 return "Empty commit list.";
@@ -70,6 +69,8 @@ public class app {
                 modified_count+=modified.size();
                 removed_count+=removed.size();
 
+                commit_message+=commit.get("message")+"\n";
+
                 add_list.addAll(added);
                 add_list.addAll(modified);
                 delete_list.addAll(modified);
@@ -77,6 +78,7 @@ public class app {
             }
             mailContent+="[修改者]："+params.get("pusher").toString();
             mailContent+="\n[提交情况]：添加了"+added_count+"个文件，修改了"+modified_count+"个文件，删除了"+removed_count+"个文件";
+            mailContent+="\n[提交信息]："+commit_message;
             mailContent+="\n[执行命令]："+project.getCommand();
             mailContent+="\n[执行结果]："+Util.execCommand(project.getCommand());
 
@@ -110,9 +112,11 @@ public class app {
             String flush_content="";
             //获取要刷新的url
             String[] urls = new String[add_list.size()];
-            for(int i=0;i<add_list.size();i++){
-                urls[i]=project.getDomain()+project.getPrefix()+add_list.get(i);
+            int i=0;
+            for(String url:add_list){
+                urls[i]=project.getDomain()+project.getPrefix()+url;
                 flush_content+=urls[i]+"\n";
+                i++;
             }
             boolean flush_result;
             //刷新CDN文件
